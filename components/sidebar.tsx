@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Montserrat } from 'next/font/google'
-import { Code, ImageIcon, LayoutDashboard, MessageSquare, Music, Settings, VideoIcon } from "lucide-react";
+import { Code, ImageIcon, LayoutDashboard, MessageSquare, Music, PenSquare, Settings, VideoIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
@@ -43,6 +43,12 @@ const routes = [
     href: '/music',
   },
   {
+    label: 'Writing Assistant',
+    icon: PenSquare,
+    color: "text-pink-800",
+    href: '/mirrorscripts',
+  },
+  {
     label: 'Code Generation',
     icon: Code,
     color: "text-green-700",
@@ -54,6 +60,8 @@ const routes = [
     href: '/settings',
   },
 ];
+
+
 
 interface SidebarProps {
   apiLimitCount: number;

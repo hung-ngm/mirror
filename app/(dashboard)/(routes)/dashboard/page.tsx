@@ -8,7 +8,8 @@ import {
   MessageSquare, 
   Music, 
   VideoIcon,
-  Code
+  Code,
+  PenSquare
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -40,6 +41,12 @@ const tools = [
     color: "text-orange-700",
     bgColor: "bg-orange-700/10",
     href: "/video"
+  },
+  {
+    label: 'Writing Assistant',
+    icon: PenSquare,
+    color: "text-pink-800",
+    href: '/mirrorscripts',
   },
   {
     label: "Code Generation",
