@@ -4,11 +4,6 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { 
   ArrowRight, 
-  ImageIcon, 
-  MessageSquare, 
-  Music, 
-  VideoIcon,
-  Code,
   PenSquare
 } from "lucide-react";
 import { useRouter } from "next/navigation";

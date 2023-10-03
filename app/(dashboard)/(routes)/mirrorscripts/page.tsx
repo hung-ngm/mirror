@@ -5,7 +5,7 @@ import * as z from "zod";
 import { Heading } from "@/components/heading";
 import { Empty } from "@/components/empty";
 import { Loader } from "@/components/loader";
-import { Download, PenSquare } from "lucide-react";
+import { PenSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { 
@@ -31,12 +31,10 @@ import {
     SelectContent, 
     SelectItem
 } from "@/components/ui/select";
-import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { useProModal } from "@/hooks/use-pro-modal";
 import toast from "react-hot-toast";
 import useWebsocket from "@/hooks/use-websocket";
-import { BotAvatar } from "@/components/bot-avatar";
 import ReactMarkdown from "react-markdown";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -80,8 +78,6 @@ const MirrorScriptsPage = () => {
             close();
         }
     }, [])
-
-    // const isLoading = form.formState.isSubmitting;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
