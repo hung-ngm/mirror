@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 
 const tools = [
   {
-    label: 'Writing Assistant',
+    label: 'Research Assistant',
     icon: PenSquare,
     color: "text-pink-800",
     bgColor: "bg-pink-800/10",

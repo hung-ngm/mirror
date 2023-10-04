@@ -19,7 +19,7 @@ const routes = [
     color: "text-sky-500"
   },
   {
-    label: 'Writing Assistant',
+    label: 'Research Assistant',
     icon: PenSquare,
     color: "text-pink-800",
     href: '/mirrorscripts',

@@ -123,7 +123,7 @@ const MirrorScriptsPage = () => {
     return (
         <div>
             <Heading
-                title="MirrorScripts - Your AI Writing Assistant"
+                title="MirrorScripts - Your AI Research Assistant"
                 description="Surpercharge your research writing."
                 icon={PenSquare}
                 iconColor="text-pink-800"
