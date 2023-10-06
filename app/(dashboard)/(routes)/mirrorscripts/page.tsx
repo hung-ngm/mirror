@@ -81,6 +81,7 @@ const MirrorScriptsPage = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
+            setIsLoading(true);
             setReport('');
 
             // Check API limit
@@ -99,7 +100,7 @@ const MirrorScriptsPage = () => {
                 throw { response: { status: 403 } };
             }
 
-            setIsLoading(true);
+            
             send(`start ${JSON.stringify(values)}`);
 
             // Increase API limit
