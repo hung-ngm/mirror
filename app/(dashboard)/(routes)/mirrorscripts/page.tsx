@@ -12,7 +12,7 @@ import {
     reportTypeOptions,
     formSchema 
 } from "./constants";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { 
     Form, 
     FormControl, 
@@ -37,6 +37,8 @@ import toast from "react-hot-toast";
 import useWebsocket from "@/hooks/use-websocket";
 import ReactMarkdown from "react-markdown";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getHostName } from "@/lib/mirrorscripts";
+
 
 const MirrorScriptsPage = () => {
     const proModal = useProModal();
@@ -44,6 +46,7 @@ const MirrorScriptsPage = () => {
     const [report, setReport] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { send, close, socketRef } = useWebsocket();
+    const [reportLink, setReportLink] = useState<string>('#');
     
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -53,6 +56,8 @@ const MirrorScriptsPage = () => {
             agent: "Auto Agent",
         }
     });
+
+    const reportRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         const socket = socketRef.current;
@@ -71,6 +76,11 @@ const MirrorScriptsPage = () => {
                 setReport((prevReport: string) => prevReport + data.output);
             } else if (data.type == 'path') {
                 console.log("path: ", data);
+                const { protocol } = window.location;
+                const serverPath = `${protocol}//${getHostName()}`;
+                const filePath = data.output.substring(1);
+                const reportPath = `${serverPath}${filePath}`;
+                setReportLink(reportPath);
             }
         }
 
@@ -118,6 +128,18 @@ const MirrorScriptsPage = () => {
             }
         } finally {
             router.refresh();
+        }
+    };
+
+    const copyToClipboard = async () => {
+        try {
+            if (reportRef.current) {
+                await navigator.clipboard.writeText(reportRef.current.innerText);
+                toast.success("Copied to clipboard");
+            }
+            
+        } catch (error) {
+            toast.error("Failed to copy text to clipboard");
         }
     };
 
@@ -227,11 +249,17 @@ const MirrorScriptsPage = () => {
                                 </CardHeader>
 
                                 <ScrollArea className="h-[500px] text-lg text-gray-700 p-4 rounded flex items-center justify-center">
-                                    <div className="prose max-w-full p-4">
+                                    <div className="prose max-w-full p-4" ref={reportRef}>
                                         <ReactMarkdown>{report}</ReactMarkdown>
                                     </div>
                                 </ScrollArea>
                             </Card>
+                            <div className="float-right mt-4 space-x-2">
+                            <Button variant="premium" onClick={() => copyToClipboard()}>Copy to clipboard</Button>
+                                <a href={reportLink} target="_blank">
+                                    <Button variant="premium">Download as PDF</Button>
+                                </a>
+                            </div>
                         </div>
                     )}
                 </div>
