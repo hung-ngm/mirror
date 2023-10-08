@@ -37,7 +37,6 @@ import toast from "react-hot-toast";
 import useWebsocket from "@/hooks/use-websocket";
 import ReactMarkdown from "react-markdown";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getHostName } from "@/lib/mirrorscripts";
 
 
 const MirrorScriptsPage = () => {
@@ -76,11 +75,7 @@ const MirrorScriptsPage = () => {
                 setReport((prevReport: string) => prevReport + data.output);
             } else if (data.type == 'path') {
                 console.log("path: ", data);
-                const { protocol } = window.location;
-                const serverPath = `${protocol}//${getHostName()}`;
-                const filePath = data.output.substring(1);
-                const reportPath = `${serverPath}${filePath}`;
-                setReportLink(reportPath);
+                setReportLink(data.output);
             }
         }
 
