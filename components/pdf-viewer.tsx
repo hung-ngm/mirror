@@ -5,7 +5,7 @@ interface PDFViewerProps {
 export const PDFViewer = ({ pdfUrl }: PDFViewerProps) => {
     return (
         <iframe
-          src={`https://docs.google.com/gview?url=${pdfUrl}&embedded=true`}
+          src={pdfUrl}
           className="w-full h-full"
         ></iframe>
     );
