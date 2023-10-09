@@ -14,6 +14,20 @@ export const saveReport = async (reportUrl: string) => {
     });
 }
 
+export const getReportById = async (reportId: string) => {
+    const { userId } = auth();
+
+    if (!userId) {
+        return;
+    }
+
+    const report = await prismadb.userReport.findUnique({
+        where: { id: reportId }
+    });
+
+    return report;
+}
+
 export const getReports = async () => {
     const { userId } = auth();
 
@@ -27,3 +41,7 @@ export const getReports = async () => {
 
     return reports;
 }
+
+export const convertPdfUrlToMd = (url: string): string => {
+    return url.replace('.pdf', '.md');
+};

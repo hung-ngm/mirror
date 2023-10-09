@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Montserrat } from 'next/font/google'
-import { LayoutDashboard, PenSquare, Settings } from "lucide-react";
+import { LayoutDashboard, PenSquare, Settings, FileText } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
@@ -23,6 +23,12 @@ const routes = [
     icon: PenSquare,
     color: "text-pink-800",
     href: '/mirrorscripts',
+  },
+  {
+    label: 'Your Reports',
+    icon: FileText,
+    color: "text-green-800",
+    href: '/reports',
   },
   {
     label: 'Settings',
