@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button";
 import { UserButton } from "@clerk/nextjs";
-import { Menu } from "lucide-react";
 import MobileSidebar from "@/components/mobile-sidebar";
 import { getApiLimitCount } from "@/lib/api-limit";
 import { checkSubscription } from "@/lib/subscription";

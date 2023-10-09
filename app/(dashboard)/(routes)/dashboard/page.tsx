@@ -4,7 +4,8 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { 
   ArrowRight, 
-  PenSquare
+  PenSquare,
+  FileText
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -15,6 +16,13 @@ const tools = [
     color: "text-pink-800",
     bgColor: "bg-pink-800/10",
     href: '/mirrorscripts',
+  },
+  {
+    label: 'Your Reports',
+    icon: FileText,
+    color: "text-green-800",
+    bgColor: "bg-green-800/10",
+    href: '/reports',
   },
 ]
 
