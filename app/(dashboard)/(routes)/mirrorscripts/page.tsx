@@ -46,6 +46,8 @@ const MirrorScriptsPage = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { send, close, socketRef } = useWebsocket();
     const [reportLink, setReportLink] = useState<string>('#');
+    const [isSavingReport, setIsSavingReport] = useState<boolean>(false);
+    const [reportSaved, setReportSaved] = useState<boolean>(false);
     
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -137,6 +139,21 @@ const MirrorScriptsPage = () => {
             toast.error("Failed to copy text to clipboard");
         }
     };
+
+    const onSaveReport = async () => {
+        try {
+            setIsSavingReport(true);
+            const response = await axios.post("/api/saveReport", {
+                reportUrl: reportLink
+            })
+            setIsSavingReport(false);
+            setReportSaved(true);
+        } catch (error: any) {
+            toast.error("Something went wrong");
+        } finally {
+            router.refresh();
+        }
+    }
 
     return (
         <div>
@@ -250,7 +267,25 @@ const MirrorScriptsPage = () => {
                                 </ScrollArea>
                             </Card>
                             <div className="float-right mt-4 space-x-2">
-                            <Button variant="premium" onClick={() => copyToClipboard()}>Copy to clipboard</Button>
+                                {
+                                    (!reportSaved) ?
+                                        (
+                                            <Button 
+                                                variant="premium" 
+                                                disabled={isSavingReport} 
+                                                onClick={() => onSaveReport()}
+                                            >
+                                                Save your report
+                                            </Button>
+                                        )
+                                            :
+                                        (
+                                            <Button variant="success" disabled={true}>
+                                                Report saved
+                                            </Button>
+                                        )
+                                }
+                                <Button variant="premium" onClick={() => copyToClipboard()}>Copy to clipboard</Button>
                                 <a href={reportLink} target="_blank">
                                     <Button variant="premium">Download as PDF</Button>
                                 </a>
