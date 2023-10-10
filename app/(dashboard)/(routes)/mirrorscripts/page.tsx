@@ -43,6 +43,7 @@ const MirrorScriptsPage = () => {
     const proModal = useProModal();
     const router = useRouter();
     const [report, setReport] = useState<string>('');
+    const [reportChunks, setReportChunks] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { send, close, socketRef } = useWebsocket();
     const [reportLink, setReportLink] = useState<string>('#');
@@ -75,7 +76,8 @@ const MirrorScriptsPage = () => {
                     form.reset();
                   }
             } else if (data.type == 'report') {
-                setReport((prevReport: string) => prevReport + data.output);
+                console.log("reports: ", data);
+                setReportChunks((prevReportChunks: string[]) => [...prevReportChunks, data.output])
             } else if (data.type == 'path') {
                 console.log("path: ", data);
                 setReportLink(data.output);
@@ -156,29 +158,25 @@ const MirrorScriptsPage = () => {
         }
     }
 
-    const [reportChunks, setReportChunks] = useState('');
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const CHUNK_SIZE = 20; // characters. Would be better to send chunks of words
     const DELAY = 700 // ms
     useEffect(() => {
-        if (report.length == 0) {
-            return
+        if (currentIndex >= reportChunks.length) {
+            return;
         }
         const interval = setInterval(() => {
-            console.log("interval run");
-            const nextIndex = Math.min(currentIndex + CHUNK_SIZE,report.length);
-            const chunk = report.slice(currentIndex, nextIndex);
-            setReportChunks((prevReportChunks) => prevReportChunks + chunk);
+            const chunk = reportChunks[currentIndex];
+            setReport((prevReport) => prevReport + chunk);
+            const nextIndex = currentIndex+1;
             setCurrentIndex(nextIndex);
-
-            if (nextIndex == report.length) {
+            if (nextIndex == reportChunks.length) {
                 clearInterval(interval);
             }
         }, DELAY);
 
         return () => clearInterval(interval);
-    }, [currentIndex, report]);
+    }, [reportChunks, currentIndex]);
 
     return (
         <div>
@@ -270,21 +268,24 @@ const MirrorScriptsPage = () => {
                     </Form>
                 </div>
                 <div className="space-y-4 mt-4">
-                    <div className="overflow-y-scroll h-80 scroll-smooth">
-                        {logs.length > 0 && logs.map((log, idx) => (
-                            <div
-                                key={idx}
-                                className="
-                                    rounded-lg
-                                    border
-                                    p-4
-                                    my-4
-                                "
-                            >
-                                {log}
-                            </div>
-                        ))}
-                    </div>
+                    {logs.length > 0 && (
+                        <div className="overflow-y-scroll h-80 scroll-smooth">
+                            {logs.map((log, idx) => (
+                                <div
+                                    key={idx}
+                                    className="
+                                        rounded-lg
+                                        border
+                                        p-4
+                                        my-4
+                                        bg-gray-300
+                                    "
+                                >
+                                    {log}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                     {isLoading && (
                         <div className="p-20">
                             <Loader />
@@ -302,7 +303,7 @@ const MirrorScriptsPage = () => {
 
                                 <ScrollArea className="h-[500px] text-lg text-gray-700 p-4 rounded flex items-center justify-center">
                                     <div className="prose max-w-full p-4" ref={reportRef}>
-                                        <ReactMarkdown>{reportChunks}</ReactMarkdown>
+                                        <ReactMarkdown>{report}</ReactMarkdown>
                                     </div>
                                 </ScrollArea>
                             </Card>
