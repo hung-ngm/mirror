@@ -43,12 +43,17 @@ const MirrorScriptsPage = () => {
     const proModal = useProModal();
     const router = useRouter();
     const [report, setReport] = useState<string>('');
+    const [reportChunks, setReportChunks] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { send, close, socketRef } = useWebsocket();
     const [reportLink, setReportLink] = useState<string>('#');
     const [isSavingReport, setIsSavingReport] = useState<boolean>(false);
     const [reportSaved, setReportSaved] = useState<boolean>(false);
-    
+    const [logs, setLogs] = useState<string[]>([]);
+
+    const endOfLogsRef = useRef<HTMLDivElement | null>(null);
+    const endOfReportRef = useRef<HTMLDivElement | null>(null);
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -68,13 +73,14 @@ const MirrorScriptsPage = () => {
 
             if (data.type == 'logs') {
                 console.log("logs: ", data);
-
+                setLogs(prevLogs => [...prevLogs, data.output])
                 if (data.output.startsWith("\nTotal run time:")) {
                     setIsLoading(false);
                     form.reset();
-                  }
+                }
             } else if (data.type == 'report') {
-                setReport((prevReport: string) => prevReport + data.output);
+                console.log("reports: ", data);
+                setReportChunks((prevReportChunks: string[]) => [...prevReportChunks, data.output])
             } else if (data.type == 'path') {
                 console.log("path: ", data);
                 setReportLink(data.output);
@@ -85,6 +91,14 @@ const MirrorScriptsPage = () => {
             close();
         }
     }, [])
+
+    useEffect(() => {
+        endOfLogsRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [logs]);
+    
+    useEffect(() => {
+        endOfReportRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [report]);
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
@@ -154,6 +168,26 @@ const MirrorScriptsPage = () => {
             router.refresh();
         }
     }
+
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const DELAY = 700 // ms
+    useEffect(() => {
+        if (currentIndex >= reportChunks.length) {
+            return;
+        }
+        const interval = setInterval(() => {
+            const chunk = reportChunks[currentIndex];
+            setReport((prevReport) => prevReport + chunk);
+            const nextIndex = currentIndex+1;
+            setCurrentIndex(nextIndex);
+            if (nextIndex == reportChunks.length) {
+                clearInterval(interval);
+            }
+        }, DELAY);
+
+        return () => clearInterval(interval);
+    }, [reportChunks, currentIndex]);
 
     return (
         <div>
@@ -245,6 +279,25 @@ const MirrorScriptsPage = () => {
                     </Form>
                 </div>
                 <div className="space-y-4 mt-4">
+                    {logs.length > 0 && (
+                        <ScrollArea className="overflow-y-scroll scroll-smooth h-[500px] text-lg text-gray-700 p-4 rounded flex items-center justify-center">
+                            {logs.map((log, idx) => (
+                                <div
+                                    key={idx}
+                                    className="
+                                        rounded-lg
+                                        border
+                                        p-4
+                                        my-4
+                                        bg-gray-300
+                                    "
+                                >
+                                    {log}
+                                </div>
+                            ))}
+                            <div ref={endOfLogsRef}></div>
+                        </ScrollArea>
+                    )}
                     {isLoading && (
                         <div className="p-20">
                             <Loader />
@@ -263,33 +316,36 @@ const MirrorScriptsPage = () => {
                                 <ScrollArea className="h-[500px] text-lg text-gray-700 p-4 rounded flex items-center justify-center">
                                     <div className="prose max-w-full p-4" ref={reportRef}>
                                         <ReactMarkdown>{report}</ReactMarkdown>
+                                        <div ref={endOfReportRef}></div>
                                     </div>
                                 </ScrollArea>
                             </Card>
-                            <div className="float-right mt-4 space-x-2">
-                                {
-                                    (!reportSaved) ?
-                                        (
-                                            <Button 
-                                                variant="premium" 
-                                                disabled={isSavingReport} 
-                                                onClick={() => onSaveReport()}
-                                            >
-                                                Save your report
-                                            </Button>
-                                        )
-                                            :
-                                        (
-                                            <Button variant="success" disabled={true}>
-                                                Report saved
-                                            </Button>
-                                        )
-                                }
-                                <Button variant="premium" onClick={() => copyToClipboard()}>Copy to clipboard</Button>
-                                <a href={reportLink} target="_blank">
-                                    <Button variant="premium">Download as PDF</Button>
-                                </a>
-                            </div>
+                            {!isLoading && (
+                                <div className="float-right mt-4 space-x-2">
+                                    {
+                                        (!reportSaved) ?
+                                            (
+                                                <Button 
+                                                    variant="premium" 
+                                                    disabled={isSavingReport} 
+                                                    onClick={() => onSaveReport()}
+                                                >
+                                                    Save your report
+                                                </Button>
+                                            )
+                                                :
+                                            (
+                                                <Button variant="success" disabled={true}>
+                                                    Report saved
+                                                </Button>
+                                            )
+                                    }
+                                    <Button variant="premium" onClick={() => copyToClipboard()}>Copy to clipboard</Button>
+                                    <a href={reportLink} target="_blank">
+                                        <Button variant="premium">Download as PDF</Button>
+                                    </a>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
