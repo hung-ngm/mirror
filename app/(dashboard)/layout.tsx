@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import Navbar from "@/components/navbar";
 import { Sidebar } from "@/components/sidebar";
 import { getApiLimitCount } from "@/lib/api-limit";
@@ -19,6 +20,7 @@ const DashboardLayout = async ({
       <main className="md:pl-72 pb-10">
         <Navbar />
         {children}
+        <Analytics />
       </main>
     </div>
    );
