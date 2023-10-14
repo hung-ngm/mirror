@@ -10,7 +10,7 @@ export const LandingHero = () => {
 
     return (
         <div className="relative w-full flex flex-col gap-24 items-center text-center py-12">
-            <div style={{ position: "sticky" }} className="top-24 -z-0 flex flex-col gap-2 items-center justify-center pt-24 text-white font-bold py-36 text-center space-y-5">
+            <div style={{ position: "relative" }} className="top-24 -z-0 flex flex-col gap-2 items-center justify-center pt-24 text-white font-bold py-36 text-center space-y-5">
                 <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl space-y-5 font-extrabold">
                     <h1>The best AI tool for</h1>
                     <div className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
