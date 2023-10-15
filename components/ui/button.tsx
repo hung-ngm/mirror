@@ -20,6 +20,7 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         premium: "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white border-0",
         success: "bg-green-500 text-white hover:bg-green-600",
+        step: "bg-green-800 text-white hover:bg-green-900"
       },
       size: {
         default: "h-10 px-4 py-2",

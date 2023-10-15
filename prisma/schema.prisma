@@ -33,3 +33,20 @@ model UserReport {
   userId  String
   url     String  @unique  @map(name: "user_report_url")
 }
+
+model UserSchool {
+  id  String  @id  @default(cuid())
+  userId  String  @unique
+  studentType  String  @map(name: "student_type")
+  studyArea  String  @map(name: "study_area")
+  purpose  String  @map(name: "purpose")
+}
+
+model UserWork {
+  id  String  @id  @default(cuid())
+  userId  String  @unique
+  function  String  @map(name: "function")
+  companySize  String  @map(name: "company_size")
+  role  String  @map(name: "role")
+  purpose  String  @map(name: "purpose")
+}
