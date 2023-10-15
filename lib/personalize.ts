@@ -60,3 +60,31 @@ export const saveUserWork = async (
         })
     }
 }
+
+export const getUserSchool = async () => {
+    const { userId } = auth();
+
+    if (!userId) {
+        return;
+    }
+
+    const userSchool = await prismadb.userSchool.findUnique({
+        where: { userId: userId }
+    });
+
+    return userSchool
+}
+
+export const getUserWork = async () => {
+    const { userId } = auth();
+
+    if (!userId) {
+        return;
+    }
+
+    const userWork = await prismadb.userSchool.findUnique({
+        where: { userId: userId }
+    });
+
+    return userWork;
+}

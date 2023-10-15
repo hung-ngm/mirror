@@ -35,12 +35,30 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { useEffect } from "react";
 
 const PersonalizePage = () => {
     const [progress, setProgress] = useState<number>(50);
     const [selection, setSelection] = useState<string>("");
     const [step, setStep] = useState<number>(1);
     const router = useRouter();
+
+    useEffect(() => {
+        const fetchSurvey = async () => {
+            try {
+                const getUserWorkResponse = await axios.get("/api/getUserWork");
+                const getUserSchoolResponse = await axios.get("/api/getUserSchool");
+                const userWork = getUserWorkResponse.data.userWork;
+                const userSchool = getUserSchoolResponse.data.userSchool;
+                if (userWork || userSchool) {
+                    router.push("/dashboard");
+                }
+            } catch (error: any) {
+                console.log(error);
+            }
+        }
+        fetchSurvey();
+    }, [])
 
     const handleNext = () => {
         setStep(step + 1);
