@@ -321,7 +321,7 @@ const MirrorScriptsPage = () => {
                                 </ScrollArea>
                             </Card>
                             {!isLoading && (
-                                <div className="float-right mt-4 space-x-2">
+                                <div className="float-right mr-14 mt-4 space-x-2">
                                     {
                                         (!reportSaved) ?
                                             (
