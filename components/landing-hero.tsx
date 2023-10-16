@@ -41,7 +41,7 @@ export const LandingHero = () => {
                     No credit card required.
                 </div>
             </div>
-            <iframe style={{ scale:"0.9"}} width="1200" height="650" src="https://www.youtube.com/embed/dH14tZrMuJE?si=easxLJmJmLIxO6RZ" title="YouTube video player" ></iframe>
+            <iframe style={{ scale:"0.9"}} width="1200" height="650" src="https://www.youtube.com/embed/bIawgvNe2vg?si=76ukt1sV2ecmzIRQ" title="YouTube video player" ></iframe>
         </div>
     ) 
 }
