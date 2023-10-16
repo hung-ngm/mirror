@@ -14,28 +14,28 @@ import { cn } from "@/lib/utils";
 
 const testimonials = [
     {
-        name: "Hung Nguyen",
+        name: "ChuckleMaster42",
         avatar: "H",
-        title: "Software Engineer",
-        description: "This is the best application I've ever created!"
+        title: "Researcher",
+        description: "I used to dread writing research reports, but thanks to this website, I now look forward to them as if they were a stand-up comedy show. Who knew data analysis could be this entertaining? I'm thinking of submitting my next report to the Pulitzer Prize for Humor!" 
     },
     {
-        name: "Hung Nguyen",
+        name: "Dr. Gigglesworth",
         avatar: "H",
-        title: "Software Engineer",
-        description: "This is the best application I've ever created!"
+        title: "Researcher",
+        description: "I've spent years studying, but I've never had more fun with research than I have on this website. I laughed so hard, my data points almost fell off the scatter plot! This site turned my thesis into a comedy special, and my academic advisor is my new favorite comedian."
     },
     {
-        name: "Hung Nguyen",
+        name: "ResearchRioter",
         avatar: "H",
-        title: "Software Engineer",
-        description: "This is the best application I've ever created!"
+        title: "Researcher",
+        description: "Finally, a website that makes writing research reports so enjoyable that I forgot I was supposed to be working! I laughed so much, my coffee came out of my nose and that's some high-quality data visualization right there. 10/10, would procrastinate again." 
     },
     {
-        name: "Hung Nguyen",
+        name: "HilarityScientist",
         avatar: "H",
-        title: "Software Engineer",
-        description: "This is the best application I've ever created!"
+        title: "Scientist",
+        description: "I thought my research days were doomed to be a never-ending snooze-fest until I stumbled upon this gem. Not only did it help me create a killer report, but it also made me laugh so hard that even my pet parrot started quoting my research findings. I now conduct experiments just to get the punchlines!"
     }
 ]
 
