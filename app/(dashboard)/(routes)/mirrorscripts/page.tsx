@@ -47,8 +47,6 @@ const MirrorScriptsPage = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { send, close, socketRef } = useWebsocket();
     const [reportLink, setReportLink] = useState<string>('#');
-    const [isSavingReport, setIsSavingReport] = useState<boolean>(false);
-    const [reportSaved, setReportSaved] = useState<boolean>(false);
     const [logs, setLogs] = useState<string[]>([]);
 
     const endOfLogsRef = useRef<HTMLDivElement | null>(null);
@@ -68,22 +66,29 @@ const MirrorScriptsPage = () => {
     useEffect(() => {
         const socket = socketRef.current;
 
-        socket.onmessage = (event: MessageEvent) => {
+        socket.onmessage = async (event: MessageEvent) => {
             const data = JSON.parse(event.data);
 
             if (data.type == 'logs') {
-                console.log("logs: ", data);
                 setLogs(prevLogs => [...prevLogs, data.output])
                 if (data.output.startsWith("\nTotal run time:")) {
                     setIsLoading(false);
                     form.reset();
                 }
             } else if (data.type == 'report') {
-                console.log("reports: ", data);
                 setReportChunks((prevReportChunks: string[]) => [...prevReportChunks, data.output])
             } else if (data.type == 'path') {
                 console.log("path: ", data);
                 setReportLink(data.output);
+
+                // Autosave report
+                try {
+                    const response = await axios.post("/api/saveReport", {
+                        reportUrl: data.output
+                    })
+                } catch (error: any) {
+                    console.log(error);
+                }      
             }
         }
 
@@ -153,21 +158,6 @@ const MirrorScriptsPage = () => {
             toast.error("Failed to copy text to clipboard");
         }
     };
-
-    const onSaveReport = async () => {
-        try {
-            setIsSavingReport(true);
-            const response = await axios.post("/api/saveReport", {
-                reportUrl: reportLink
-            })
-            setIsSavingReport(false);
-            setReportSaved(true);
-        } catch (error: any) {
-            toast.error("Something went wrong");
-        } finally {
-            router.refresh();
-        }
-    }
 
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -322,24 +312,6 @@ const MirrorScriptsPage = () => {
                             </Card>
                             {!isLoading && (
                                 <div className="float-right mr-14 mt-4 space-x-2">
-                                    {
-                                        (!reportSaved) ?
-                                            (
-                                                <Button 
-                                                    variant="premium" 
-                                                    disabled={isSavingReport} 
-                                                    onClick={() => onSaveReport()}
-                                                >
-                                                    Save your report
-                                                </Button>
-                                            )
-                                                :
-                                            (
-                                                <Button variant="success" disabled={true}>
-                                                    Report saved
-                                                </Button>
-                                            )
-                                    }
                                     <Button variant="premium" onClick={() => copyToClipboard()}>Copy to clipboard</Button>
                                     <a href={reportLink} target="_blank">
                                         <Button variant="premium">Download as PDF</Button>
