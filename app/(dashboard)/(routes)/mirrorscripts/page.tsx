@@ -37,6 +37,7 @@ import toast from "react-hot-toast";
 import useWebsocket from "@/hooks/use-websocket";
 import ReactMarkdown from "react-markdown";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { usePro } from "@/hooks/use-pro";
 
 
 const MirrorScriptsPage = () => {
@@ -48,6 +49,7 @@ const MirrorScriptsPage = () => {
     const { send, close, socketRef } = useWebsocket();
     const [reportLink, setReportLink] = useState<string>('#');
     const [logs, setLogs] = useState<string[]>([]);
+    const { isPro, setIsPro } = usePro();
 
     const endOfLogsRef = useRef<HTMLDivElement | null>(null);
     const endOfReportRef = useRef<HTMLDivElement | null>(null);
@@ -86,9 +88,17 @@ const MirrorScriptsPage = () => {
                     const response = await axios.post("/api/saveReport", {
                         reportUrl: data.output
                     })
+
+                    // Increase the API limit if the report is generated successfully
+                    if (!isPro) {
+                        await axios.post('/api/increaseApiLimit');
+                    }
+
                 } catch (error: any) {
                     console.log(error);
-                }      
+                }  finally {
+                    router.refresh();
+                }
             }
         }
 
@@ -115,10 +125,11 @@ const MirrorScriptsPage = () => {
             const freeTrial = apiLimitResponse.data.freeTrial;
 
             // Check subscription
-            let isPro = false;
+            
             if (!freeTrial) {
                 const subscriptionResponse = await axios.get('/api/checkSubscription');
-                isPro = subscriptionResponse.data.isPro;
+                const isProResult = subscriptionResponse.data.isPro;
+                setIsPro(isProResult);
             }
 
             // If the user has reached the API limit and does not have a valid subscription, throw an error
@@ -128,12 +139,6 @@ const MirrorScriptsPage = () => {
 
             
             send(`start ${JSON.stringify(values)}`);
-
-            // Increase API limit
-            if (!isPro) {
-                await axios.post('/api/increaseApiLimit');
-            }
-
 
         } catch (error: any) {
             console.log(error);
