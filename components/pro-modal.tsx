@@ -10,6 +10,8 @@ import {
     DialogHeader
 } from "@/components/ui/dialog";
 import { 
+    PenSquare,
+    FileText,
     ArrowRight, 
     ImageIcon, 
     MessageSquare, 
@@ -30,34 +32,16 @@ import toast from "react-hot-toast";
 
 const tools = [
     {
-      label: "Conversation",
-      icon: MessageSquare,
-      color: "text-violet-500",
-      bgColor: "bg-violet-500/10"
+        label: 'Research Assistant',
+        icon: PenSquare,
+        color: "text-pink-800",
+        bgColor: "bg-pink-800/10",
     },
     {
-      label: "Music Generation",
-      icon: Music,
-      color: "text-emerald-500",
-      bgColor: "bg-emerald-500/10"
-    },
-    {
-      label: "Image Generation",
-      icon: ImageIcon,
-      color: "text-pink-700",
-      bgColor: "bg-pink-700/10"
-    },
-    {
-      label: "Video Generation",
-      icon: VideoIcon,
-      color: "text-orange-700",
-      bgColor: "bg-orange-700/10"
-    },
-    {
-      label: "Code Generation",
-      icon: Code,
-      color: "text-green-700",
-      bgColor: "bg-green-700/10"
+        label: 'Your Reports',
+        icon: FileText,
+        color: "text-green-800",
+        bgColor: "bg-green-800/10",
     },
 ]
 
@@ -84,7 +68,7 @@ export const ProModal = () => {
                 <DialogHeader>
                     <DialogTitle className="flex justify-center items-center flex-col gap-y-4 pb-2">
                         <div className="flex items-center gap-x-2 font-bold py-1">
-                            Upgrade to Mirror
+                            Upgrade to MirrorScripts
                             <Badge variant="premium" className="uppercase text-sm py-1">
                                 pro
                             </Badge>

@@ -7,11 +7,11 @@ export const Loader = () => {
                 <Image
                     alt="logo"
                     fill
-                    src="/logo_circle.png"
+                    src="/loading.png"
                 />
             </div>
             <p className="text-sm text-muted-foreground">
-                Mirror is thinking...
+                MirrorScripts is thinking...
             </p>
         </div>
     )

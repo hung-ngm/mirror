@@ -37,6 +37,7 @@ import toast from "react-hot-toast";
 import useWebsocket from "@/hooks/use-websocket";
 import ReactMarkdown from "react-markdown";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { usePro } from "@/hooks/use-pro";
 
 
 const MirrorScriptsPage = () => {
@@ -47,9 +48,8 @@ const MirrorScriptsPage = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const { send, close, socketRef } = useWebsocket();
     const [reportLink, setReportLink] = useState<string>('#');
-    const [isSavingReport, setIsSavingReport] = useState<boolean>(false);
-    const [reportSaved, setReportSaved] = useState<boolean>(false);
     const [logs, setLogs] = useState<string[]>([]);
+    const { isPro, setIsPro } = usePro();
 
     const endOfLogsRef = useRef<HTMLDivElement | null>(null);
     const endOfReportRef = useRef<HTMLDivElement | null>(null);
@@ -68,22 +68,37 @@ const MirrorScriptsPage = () => {
     useEffect(() => {
         const socket = socketRef.current;
 
-        socket.onmessage = (event: MessageEvent) => {
+        socket.onmessage = async (event: MessageEvent) => {
             const data = JSON.parse(event.data);
 
             if (data.type == 'logs') {
-                console.log("logs: ", data);
                 setLogs(prevLogs => [...prevLogs, data.output])
                 if (data.output.startsWith("\nTotal run time:")) {
                     setIsLoading(false);
                     form.reset();
                 }
             } else if (data.type == 'report') {
-                console.log("reports: ", data);
                 setReportChunks((prevReportChunks: string[]) => [...prevReportChunks, data.output])
             } else if (data.type == 'path') {
                 console.log("path: ", data);
                 setReportLink(data.output);
+
+                // Autosave report
+                try {
+                    const response = await axios.post("/api/saveReport", {
+                        reportUrl: data.output
+                    })
+
+                    // Increase the API limit if the report is generated successfully
+                    if (!isPro) {
+                        await axios.post('/api/increaseApiLimit');
+                    }
+
+                } catch (error: any) {
+                    console.log(error);
+                }  finally {
+                    router.refresh();
+                }
             }
         }
 
@@ -110,10 +125,11 @@ const MirrorScriptsPage = () => {
             const freeTrial = apiLimitResponse.data.freeTrial;
 
             // Check subscription
-            let isPro = false;
+            
             if (!freeTrial) {
                 const subscriptionResponse = await axios.get('/api/checkSubscription');
-                isPro = subscriptionResponse.data.isPro;
+                const isProResult = subscriptionResponse.data.isPro;
+                setIsPro(isProResult);
             }
 
             // If the user has reached the API limit and does not have a valid subscription, throw an error
@@ -123,12 +139,6 @@ const MirrorScriptsPage = () => {
 
             
             send(`start ${JSON.stringify(values)}`);
-
-            // Increase API limit
-            if (!isPro) {
-                await axios.post('/api/increaseApiLimit');
-            }
-
 
         } catch (error: any) {
             console.log(error);
@@ -153,21 +163,6 @@ const MirrorScriptsPage = () => {
             toast.error("Failed to copy text to clipboard");
         }
     };
-
-    const onSaveReport = async () => {
-        try {
-            setIsSavingReport(true);
-            const response = await axios.post("/api/saveReport", {
-                reportUrl: reportLink
-            })
-            setIsSavingReport(false);
-            setReportSaved(true);
-        } catch (error: any) {
-            toast.error("Something went wrong");
-        } finally {
-            router.refresh();
-        }
-    }
 
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -321,25 +316,7 @@ const MirrorScriptsPage = () => {
                                 </ScrollArea>
                             </Card>
                             {!isLoading && (
-                                <div className="float-right mt-4 space-x-2">
-                                    {
-                                        (!reportSaved) ?
-                                            (
-                                                <Button 
-                                                    variant="premium" 
-                                                    disabled={isSavingReport} 
-                                                    onClick={() => onSaveReport()}
-                                                >
-                                                    Save your report
-                                                </Button>
-                                            )
-                                                :
-                                            (
-                                                <Button variant="success" disabled={true}>
-                                                    Report saved
-                                                </Button>
-                                            )
-                                    }
+                                <div className="float-right mr-14 mt-4 space-x-2">
                                     <Button variant="premium" onClick={() => copyToClipboard()}>Copy to clipboard</Button>
                                     <a href={reportLink} target="_blank">
                                         <Button variant="premium">Download as PDF</Button>

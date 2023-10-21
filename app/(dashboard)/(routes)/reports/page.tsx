@@ -23,8 +23,6 @@ const ReportsPage =  () => {
             return { ...report, markdown: response.data.substring(0, 200) };
         }));
         setReports(reportsWithMarkdown);
-        console.log(reportsWithMarkdown);
-
     }
 
     useEffect(() => {
