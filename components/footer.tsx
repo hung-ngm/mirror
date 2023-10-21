@@ -2,20 +2,21 @@
 
 import Link from "next/link";
 import { MaxWidthWrapper } from "./max-width-wrapper";
+import { cn } from "@/lib/utils";
+import { Montserrat } from "next/font/google";
+import Discord from "./discord";
+
+const font = Montserrat({
+  weight: "600",
+  subsets: ["latin"],
+});
 
 const navigation = {
   features: [
-    { name: "Blog", href: "#" },
-    { name: "Changelog", href: "#" },
-    { name: "Customer Stories", href: "#" },
-    { name: "Help Center", href: "#" },
-    { name: "Pricing", href: "#" },
+    { name: "Generate Report", href: "#features" },
   ],
   product: [
-    { name: "Blog", href: "#" },
-    { name: "Changelog", href: "#" },
-    { name: "Customer Stories", href: "#" },
-    { name: "Help Center", href: "#" },
+    { name: "FAQ", href: "#" },
     { name: "Pricing", href: "#" },
   ],
   legal: [
@@ -28,46 +29,26 @@ const navigation = {
 export function Footer() {
 
   return (
-    <footer className="z-10 border-t border-gray-200 py-8 backdrop-blur-lg">
+    <footer className="z-10 py-8 backdrop-blur-lg" style={{ borderTop : '1px solid  gray'}}>
       <MaxWidthWrapper className="pt-10">
         <div className="xl:grid xl:grid-cols-5 xl:gap-8">
           <div className="space-y-8 xl:col-span-2">
+            <Link href="/" className="flex items-center">
+              <span className="sr-only">MirrorScripts</span>
+              <h1 className={cn("text-4xl font-bold text-white", font.className)}>MirrorScripts</h1>
+            </Link>
             <p className="max-w-xs text-sm text-white">
-              Giving modern marketing teams superpowers with short links that
-              stand out.
+              Your one-click AI Researcher Assistant
             </p>
             <div className="flex items-center space-x-2">
               <a
-                href="https://twitter.com/dubdotco"
+                href="https://discord.gg/UuHQpZcCFw"
                 target="_blank"
                 rel="noreferrer"
-                className="group rounded-md p-2 transition-colors hover:bg-gray-100 active:bg-gray-200"
+                className="rounded-md p-2 transition-colors hover:bg-gray-600 active:bg-gray-200"
               >
-                <span className="sr-only">Twitter</span>
-                <h3 className="text-white">A</h3>
-                {/*<Twitter className="h-5 w-5 text-gray-600" />*/}
-              </a>
-              <div className="h-8 border-l border-gray-200" />
-              <a
-                href="https://github.com/steven-tey/dub"
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-md p-2 transition-colors hover:bg-gray-100 active:bg-gray-200"
-              >
-                <span className="sr-only">Github</span>
-                <h3 className="text-white">A</h3>
-                {/*<Twitter className="h-5 w-5 text-gray-600" />*/}
-              </a>
-              <div className="h-8 border-l border-gray-200" />
-              <a
-                href="https://www.linkedin.com/company/dubhq/"
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-md p-2 transition-colors hover:bg-gray-100 active:bg-gray-200"
-              >
-                <span className="sr-only">LinkedIn</span>
-                <h3 className="text-white">A</h3>
-                {/*<Twitter className="h-5 w-5 text-gray-600" />*/}
+                <span className="sr-only">Discord</span>
+                <Discord className="h-5 w-5 text-white" />
               </a>
             </div>
           </div>
@@ -83,7 +64,7 @@ export function Footer() {
                     <li key={item.name}>
                       <Link
                         href={item.href}
-                        className="text-sm text-white hover:text-gray-900"
+                        className="text-sm text-white hover:underline"
                       >
                         {item.name}
                       </Link>
@@ -100,7 +81,7 @@ export function Footer() {
                     <li key={item.name}>
                       <Link
                         href={item.href}
-                        className="text-sm text-white hover:text-gray-900"
+                        className="text-sm text-white hover:underline"
                       >
                         {item.name}
                       </Link>
@@ -115,7 +96,7 @@ export function Footer() {
                     <li key={item.name}>
                       <Link
                         href={item.href}
-                        className="text-sm text-white hover:text-gray-900"
+                        className="text-sm text-white hover:underline"
                       >
                         {item.name}
                       </Link>
@@ -126,7 +107,7 @@ export function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-16 border-t border-gray-900/10 pt-8 sm:mt-20 lg:mt-24">
+        <div className="mt-16 pt-8 sm:mt-20 lg:mt-24" style={{ borderTop : '1px solid gray' }}>
           <p className="text-sm leading-5 text-white">
             © {new Date().getFullYear()} MirrorScripts
           </p>
