@@ -5,7 +5,7 @@ import * as z from "zod";
 import { Heading } from "@/components/heading";
 import { Empty } from "@/components/empty";
 import { Loader } from "@/components/loader";
-import { PenSquare } from "lucide-react";
+import { PenSquare, Upload } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { 
@@ -38,6 +38,7 @@ import useWebsocket from "@/hooks/use-websocket";
 import ReactMarkdown from "react-markdown";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePro } from "@/hooks/use-pro";
+import { getHostName }  from "@/lib/mirrorscripts";
 
 
 const MirrorScriptsPage = () => {
@@ -114,6 +115,28 @@ const MirrorScriptsPage = () => {
     useEffect(() => {
         endOfReportRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [report]);
+
+    const handleFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+            const files = Array.from(event.target.files);
+            const formData = new FormData();
+            files.forEach(file => {
+                formData.append('files', file);
+            })
+            const fileChosen = document.getElementById('file-chosen');
+            const content = files.length + ' files upload'
+
+            try {
+                const response = await axios.post(`http://${getHostName()}/upload`, formData);
+                if (fileChosen) {
+                    fileChosen.textContent = content
+                }
+                console.log(response);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    }
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
@@ -214,7 +237,7 @@ const MirrorScriptsPage = () => {
                             <FormField
                                 name="task"
                                 render={({ field }) => (
-                                    <FormItem className="col-span-12 lg:col-span-8">
+                                    <FormItem className="col-span-12 lg:col-span-6">
                                         <FormControl className="m-0 p-0">
                                             <Input
                                                 className="
@@ -261,6 +284,24 @@ const MirrorScriptsPage = () => {
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                name=""
+                                render={({ field }) => (
+                                    <FormItem className="col-span-12 lg:col-span-2">
+                                        <FormControl className="m-0 p-0">
+                                            <div>
+                                                <input type="file" onChange={handleFileInputChange} id="fileUpload" style={{ display: 'none' }} accept=".pdf" multiple/>
+                                                <label htmlFor="fileUpload" > {/* Add a label that will trigger the file input when clicked */}
+                                                    <div className="grid grid-cols-3 rounded-md items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2" style={{ cursor: "pointer"}}>
+                                                        <Upload className="lg:col-span-1 justify-center color-white"/>
+                                                        <span id="file-chosen" className="lg:col-span-2 text-sm font-medium justify-center text-center"> Upload Files</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </FormControl>
                                     </FormItem>
                                 )}
                             />
