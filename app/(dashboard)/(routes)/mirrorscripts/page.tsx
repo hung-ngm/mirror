@@ -134,14 +134,15 @@ const MirrorScriptsPage = () => {
             setReport('');
 
             // Send the selected files
-            const formData = new FormData();
-            selectedFiles.forEach(file => {
-                formData.append('files', file);
-            })
-            const protocol = window.location.protocol;
-            const response = await axios.post(`${protocol}//${getHostName()}/upload`, formData);
-            console.log(response);
-
+            if (selectedFiles && selectedFiles.length > 0){
+                const formData = new FormData();
+                selectedFiles.forEach(file => {
+                    formData.append('files', file);
+                })
+                const protocol = window.location.protocol;
+                const response = await axios.post(`${protocol}//${getHostName()}/upload`, formData);
+                console.log(response);
+            }
             // Check API limit
             const apiLimitResponse = await axios.get('/api/checkApiLimit');
             const freeTrial = apiLimitResponse.data.freeTrial;
