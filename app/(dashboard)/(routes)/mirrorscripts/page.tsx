@@ -138,7 +138,9 @@ const MirrorScriptsPage = () => {
             selectedFiles.forEach(file => {
                 formData.append('files', file);
             })
-            await axios.post(`http://${getHostName()}/upload`, formData);
+            const protocol = window.location.protocol;
+            const response = await axios.post(`${protocol}//${getHostName()}/upload`, formData);
+            console.log(response);
 
             // Check API limit
             const apiLimitResponse = await axios.get('/api/checkApiLimit');
