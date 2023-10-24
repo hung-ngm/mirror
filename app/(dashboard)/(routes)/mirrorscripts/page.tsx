@@ -51,7 +51,7 @@ const MirrorScriptsPage = () => {
     const [reportLink, setReportLink] = useState<string>('#');
     const [logs, setLogs] = useState<string[]>([]);
     const { isPro, setIsPro } = usePro();
-
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const endOfLogsRef = useRef<HTMLDivElement | null>(null);
     const endOfReportRef = useRef<HTMLDivElement | null>(null);
 
@@ -119,21 +119,11 @@ const MirrorScriptsPage = () => {
     const handleFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
             const files = Array.from(event.target.files);
-            const formData = new FormData();
-            files.forEach(file => {
-                formData.append('files', file);
-            })
+            setSelectedFiles(files);
             const fileChosen = document.getElementById('file-chosen');
             const content = files.length + ' files upload'
-
-            try {
-                const response = await axios.post(`http://${getHostName()}/upload`, formData);
-                if (fileChosen) {
-                    fileChosen.textContent = content
-                }
-                console.log(response);
-            } catch (error) {
-                console.error('Error:', error);
+            if (fileChosen) {
+                fileChosen.textContent = content
             }
         }
     }
@@ -142,6 +132,13 @@ const MirrorScriptsPage = () => {
         try {
             setIsLoading(true);
             setReport('');
+
+            // Send the selected files
+            const formData = new FormData();
+            selectedFiles.forEach(file => {
+                formData.append('files', file);
+            })
+            await axios.post(`http://${getHostName()}/upload`, formData);
 
             // Check API limit
             const apiLimitResponse = await axios.get('/api/checkApiLimit');
@@ -206,6 +203,12 @@ const MirrorScriptsPage = () => {
 
         return () => clearInterval(interval);
     }, [reportChunks, currentIndex]);
+
+    useEffect(() => {
+        if (!isLoading) {
+            setSelectedFiles([]);
+        }
+    }, [isLoading]);
 
     return (
         <div>
@@ -295,7 +298,7 @@ const MirrorScriptsPage = () => {
                                             <div>
                                                 <input type="file" onChange={handleFileInputChange} id="fileUpload" style={{ display: 'none' }} accept=".pdf" multiple/>
                                                 <label htmlFor="fileUpload" > {/* Add a label that will trigger the file input when clicked */}
-                                                    <div className="grid grid-cols-3 rounded-md items-center justify-center bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2" style={{ cursor: "pointer"}}>
+                                                    <div className="grid border grid-cols-3 rounded-md items-center justify-center bg-light hover:bg-secondary/90 h-10 px-4 py-2" style={{ cursor: "pointer"}}>
                                                         <Upload className="lg:col-span-1 justify-center color-white"/>
                                                         <span id="file-chosen" className="lg:col-span-2 text-sm font-medium justify-center text-center"> Upload Files</span>
                                                     </div>
