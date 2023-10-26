@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import * as z from "zod";
+import { v4 as uuidv4 } from 'uuid';
 import { Heading } from "@/components/heading";
 import { Empty } from "@/components/empty";
 import { Loader } from "@/components/loader";
@@ -52,8 +53,9 @@ const MirrorScriptsPage = () => {
     const [logs, setLogs] = useState<string[]>([]);
     const { isPro, setIsPro } = usePro();
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-    const endOfLogsRef = useRef<HTMLDivElement | null>(null);
-    const endOfReportRef = useRef<HTMLDivElement | null>(null);
+    // const endOfLogsRef = useRef<HTMLDivElement | null>(null);
+    // const endOfReportRef = useRef<HTMLDivElement | null>(null);
+    const [fileUID, setFileUID] = useState<string>("default");
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -108,19 +110,31 @@ const MirrorScriptsPage = () => {
         }
     }, [])
 
-    useEffect(() => {
-        endOfLogsRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [logs]);
+    // useEffect(() => {
+    //     endOfLogsRef.current?.scrollIntoView({ behavior: "smooth" });
+    // }, [logs]);
     
-    useEffect(() => {
-        endOfReportRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [report]);
+    // useEffect(() => {
+    //     endOfReportRef.current?.scrollIntoView({ behavior: "smooth" });
+    // }, [report]);
 
     const handleFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
             const files = Array.from(event.target.files);
             setSelectedFiles(files);
             const fileChosen = document.getElementById('file-chosen');
+            // Send the selected files
+            // if (selectedFiles && selectedFiles.length > 0){
+                const formData = new FormData();
+                files.forEach(file => {
+                    formData.append('files', file);
+                })
+                const protocol = window.location.protocol;
+                const file_uid = uuidv4();
+                setFileUID(file_uid)
+                const response = await axios.post(`${protocol}//${getHostName()}/upload/${file_uid}`, formData);
+                console.log(response);
+            // }
             const content = files.length + ' files upload'
             if (fileChosen) {
                 fileChosen.textContent = content
@@ -133,16 +147,6 @@ const MirrorScriptsPage = () => {
             setIsLoading(true);
             setReport('');
 
-            // Send the selected files
-            if (selectedFiles && selectedFiles.length > 0){
-                const formData = new FormData();
-                selectedFiles.forEach(file => {
-                    formData.append('files', file);
-                })
-                const protocol = window.location.protocol;
-                const response = await axios.post(`${protocol}//${getHostName()}/upload`, formData);
-                console.log(response);
-            }
             // Check API limit
             const apiLimitResponse = await axios.get('/api/checkApiLimit');
             const freeTrial = apiLimitResponse.data.freeTrial;
@@ -160,8 +164,15 @@ const MirrorScriptsPage = () => {
                 throw { response: { status: 403 } };
             }
 
+            let org_res : {
+                task: string;
+                report_type: string;
+                agent: string;
+                fileUID: string | null;
+            } = JSON.parse(JSON.stringify(values));
+            org_res["fileUID"] = fileUID;
             
-            send(`start ${JSON.stringify(values)}`);
+            send(`start ${JSON.stringify(org_res)}`);
 
         } catch (error: any) {
             console.log(error);
@@ -337,7 +348,7 @@ const MirrorScriptsPage = () => {
                                     {log}
                                 </div>
                             ))}
-                            <div ref={endOfLogsRef}></div>
+                            {/* <div ref={endOfLogsRef}></div> */}
                         </ScrollArea>
                     )}
                     {isLoading && (
@@ -358,7 +369,7 @@ const MirrorScriptsPage = () => {
                                 <ScrollArea className="h-[500px] text-lg text-gray-700 p-4 rounded flex items-center justify-center">
                                     <div className="prose max-w-full p-4" ref={reportRef}>
                                         <ReactMarkdown>{report}</ReactMarkdown>
-                                        <div ref={endOfReportRef}></div>
+                                        {/* <div ref={endOfReportRef}></div> */}
                                     </div>
                                 </ScrollArea>
                             </Card>
