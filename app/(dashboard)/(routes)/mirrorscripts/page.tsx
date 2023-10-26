@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {Label} from "@/components/ui/label"
 import { useRouter } from "next/navigation";
 import { 
     Select, 
@@ -53,8 +54,6 @@ const MirrorScriptsPage = () => {
     const [logs, setLogs] = useState<string[]>([]);
     const { isPro, setIsPro } = usePro();
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-    // const endOfLogsRef = useRef<HTMLDivElement | null>(null);
-    // const endOfReportRef = useRef<HTMLDivElement | null>(null);
     const [fileUID, setFileUID] = useState<string>("default");
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -110,34 +109,34 @@ const MirrorScriptsPage = () => {
         }
     }, [])
 
-    // useEffect(() => {
-    //     endOfLogsRef.current?.scrollIntoView({ behavior: "smooth" });
-    // }, [logs]);
-    
-    // useEffect(() => {
-    //     endOfReportRef.current?.scrollIntoView({ behavior: "smooth" });
-    // }, [report]);
-
     const handleFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
             const files = Array.from(event.target.files);
             setSelectedFiles(files);
             const fileChosen = document.getElementById('file-chosen');
+            if (fileChosen) {
+                fileChosen.textContent = "Uploading..."
+            }
             // Send the selected files
-            // if (selectedFiles && selectedFiles.length > 0){
-                const formData = new FormData();
-                files.forEach(file => {
-                    formData.append('files', file);
-                })
-                const protocol = window.location.protocol;
-                const file_uid = uuidv4();
-                setFileUID(file_uid)
+            const formData = new FormData();
+            files.forEach(file => {
+                formData.append('files', file);
+            })
+            const protocol = window.location.protocol;
+            const file_uid = uuidv4();
+            setFileUID(file_uid)
+            try {
                 const response = await axios.post(`${protocol}//${getHostName()}/upload/${file_uid}`, formData);
                 console.log(response);
-            // }
-            const content = files.length + ' files upload'
-            if (fileChosen) {
-                fileChosen.textContent = content
+                const content = files.length + ' files upload'
+                if (fileChosen) {
+                    fileChosen.textContent = content
+                }
+            } catch (error) {
+                console.log(error);
+                if (fileChosen) {
+                    fileChosen.textContent = "Upload Files"
+                } 
             }
         }
     }
@@ -310,13 +309,21 @@ const MirrorScriptsPage = () => {
                                     <FormItem className="col-span-12 lg:col-span-2">
                                         <FormControl className="m-0 p-0">
                                             <div>
-                                                <input type="file" onChange={handleFileInputChange} id="fileUpload" style={{ display: 'none' }} accept=".pdf" multiple/>
-                                                <label htmlFor="fileUpload" > {/* Add a label that will trigger the file input when clicked */}
-                                                    <div className="grid border grid-cols-3 rounded-md items-center justify-center bg-light hover:bg-secondary/90 h-10 px-4 py-2" style={{ cursor: "pointer"}}>
-                                                        <Upload className="lg:col-span-1 justify-center color-white"/>
-                                                        <span id="file-chosen" className="lg:col-span-2 text-sm font-medium justify-center text-center"> Upload Files</span>
+                                                <Input 
+                                                    disabled={isLoading} 
+                                                    type="file" 
+                                                    onChange={handleFileInputChange} 
+                                                    id="fileUpload" 
+                                                    style={{ display: 'none' }} 
+                                                    accept=".pdf" 
+                                                    multiple
+                                                />
+                                                <Label htmlFor="fileUpload" > {/* Add a label that will trigger the file input when clicked */}
+                                                    <div aria-disabled={isLoading} className="flex border rounded-md items-center justify-center bg-light hover:bg-secondary/90 h-10 px-4 py-2 aria-disabled:pointer-events-none aria-disabled:opacity-50" style={{ cursor: "pointer"}}>
+                                                        <Upload className="justify-center"/>
+                                                        <span id="file-chosen" className="flex text-sm font-medium justify-center ml-3"> Upload Files</span>
                                                     </div>
-                                                </label>
+                                                </Label>
                                             </div>
                                         </FormControl>
                                     </FormItem>
