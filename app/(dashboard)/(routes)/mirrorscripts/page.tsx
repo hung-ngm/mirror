@@ -2,10 +2,11 @@
 
 import axios from "axios";
 import * as z from "zod";
+import { v4 as uuidv4 } from 'uuid';
 import { Heading } from "@/components/heading";
 import { Empty } from "@/components/empty";
 import { Loader } from "@/components/loader";
-import { PenSquare } from "lucide-react";
+import { PenSquare, Upload } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { 
@@ -38,6 +39,7 @@ import useWebsocket from "@/hooks/use-websocket";
 import ReactMarkdown from "react-markdown";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePro } from "@/hooks/use-pro";
+import { getHostName }  from "@/lib/mirrorscripts";
 
 
 const MirrorScriptsPage = () => {
@@ -50,9 +52,10 @@ const MirrorScriptsPage = () => {
     const [reportLink, setReportLink] = useState<string>('#');
     const [logs, setLogs] = useState<string[]>([]);
     const { isPro, setIsPro } = usePro();
-
-    const endOfLogsRef = useRef<HTMLDivElement | null>(null);
-    const endOfReportRef = useRef<HTMLDivElement | null>(null);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    // const endOfLogsRef = useRef<HTMLDivElement | null>(null);
+    // const endOfReportRef = useRef<HTMLDivElement | null>(null);
+    const [fileUID, setFileUID] = useState<string>("default");
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -107,13 +110,37 @@ const MirrorScriptsPage = () => {
         }
     }, [])
 
-    useEffect(() => {
-        endOfLogsRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [logs]);
+    // useEffect(() => {
+    //     endOfLogsRef.current?.scrollIntoView({ behavior: "smooth" });
+    // }, [logs]);
     
-    useEffect(() => {
-        endOfReportRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [report]);
+    // useEffect(() => {
+    //     endOfReportRef.current?.scrollIntoView({ behavior: "smooth" });
+    // }, [report]);
+
+    const handleFileInputChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files && event.target.files.length > 0) {
+            const files = Array.from(event.target.files);
+            setSelectedFiles(files);
+            const fileChosen = document.getElementById('file-chosen');
+            // Send the selected files
+            // if (selectedFiles && selectedFiles.length > 0){
+                const formData = new FormData();
+                files.forEach(file => {
+                    formData.append('files', file);
+                })
+                const protocol = window.location.protocol;
+                const file_uid = uuidv4();
+                setFileUID(file_uid)
+                const response = await axios.post(`${protocol}//${getHostName()}/upload/${file_uid}`, formData);
+                console.log(response);
+            // }
+            const content = files.length + ' files upload'
+            if (fileChosen) {
+                fileChosen.textContent = content
+            }
+        }
+    }
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
@@ -137,8 +164,15 @@ const MirrorScriptsPage = () => {
                 throw { response: { status: 403 } };
             }
 
+            let org_res : {
+                task: string;
+                report_type: string;
+                agent: string;
+                fileUID: string | null;
+            } = JSON.parse(JSON.stringify(values));
+            org_res["fileUID"] = fileUID;
             
-            send(`start ${JSON.stringify(values)}`);
+            send(`start ${JSON.stringify(org_res)}`);
 
         } catch (error: any) {
             console.log(error);
@@ -184,6 +218,12 @@ const MirrorScriptsPage = () => {
         return () => clearInterval(interval);
     }, [reportChunks, currentIndex]);
 
+    useEffect(() => {
+        if (!isLoading) {
+            setSelectedFiles([]);
+        }
+    }, [isLoading]);
+
     return (
         <div>
             <Heading
@@ -214,7 +254,7 @@ const MirrorScriptsPage = () => {
                             <FormField
                                 name="task"
                                 render={({ field }) => (
-                                    <FormItem className="col-span-12 lg:col-span-8">
+                                    <FormItem className="col-span-12 lg:col-span-6">
                                         <FormControl className="m-0 p-0">
                                             <Input
                                                 className="
@@ -264,6 +304,24 @@ const MirrorScriptsPage = () => {
                                     </FormItem>
                                 )}
                             />
+                            <FormField
+                                name=""
+                                render={({ field }) => (
+                                    <FormItem className="col-span-12 lg:col-span-2">
+                                        <FormControl className="m-0 p-0">
+                                            <div>
+                                                <input type="file" onChange={handleFileInputChange} id="fileUpload" style={{ display: 'none' }} accept=".pdf" multiple/>
+                                                <label htmlFor="fileUpload" > {/* Add a label that will trigger the file input when clicked */}
+                                                    <div className="grid border grid-cols-3 rounded-md items-center justify-center bg-light hover:bg-secondary/90 h-10 px-4 py-2" style={{ cursor: "pointer"}}>
+                                                        <Upload className="lg:col-span-1 justify-center color-white"/>
+                                                        <span id="file-chosen" className="lg:col-span-2 text-sm font-medium justify-center text-center"> Upload Files</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
                             <Button 
                                 className="col-span-12 lg:col-span-2 w-full"
                                 disabled={isLoading}
@@ -290,7 +348,7 @@ const MirrorScriptsPage = () => {
                                     {log}
                                 </div>
                             ))}
-                            <div ref={endOfLogsRef}></div>
+                            {/* <div ref={endOfLogsRef}></div> */}
                         </ScrollArea>
                     )}
                     {isLoading && (
@@ -311,7 +369,7 @@ const MirrorScriptsPage = () => {
                                 <ScrollArea className="h-[500px] text-lg text-gray-700 p-4 rounded flex items-center justify-center">
                                     <div className="prose max-w-full p-4" ref={reportRef}>
                                         <ReactMarkdown>{report}</ReactMarkdown>
-                                        <div ref={endOfReportRef}></div>
+                                        {/* <div ref={endOfReportRef}></div> */}
                                     </div>
                                 </ScrollArea>
                             </Card>
