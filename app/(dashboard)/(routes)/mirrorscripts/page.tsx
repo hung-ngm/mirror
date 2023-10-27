@@ -9,6 +9,7 @@ import { Loader } from "@/components/loader";
 import { PenSquare, Upload } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { LinkifyText } from "@/components/ui/linkify-text";
 import { 
     reportTypeOptions,
     formSchema 
@@ -38,6 +39,7 @@ import { useProModal } from "@/hooks/use-pro-modal";
 import toast from "react-hot-toast";
 import useWebsocket from "@/hooks/use-websocket";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from 'remark-gfm'
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePro } from "@/hooks/use-pro";
 import { getHostName }  from "@/lib/mirrorscripts";
@@ -352,7 +354,7 @@ const MirrorScriptsPage = () => {
                                         bg-gray-300
                                     "
                                 >
-                                    {log}
+                                    <LinkifyText>{log}</LinkifyText>
                                 </div>
                             ))}
                             {/* <div ref={endOfLogsRef}></div> */}
@@ -375,7 +377,15 @@ const MirrorScriptsPage = () => {
 
                                 <ScrollArea className="h-[500px] text-lg text-gray-700 p-4 rounded flex items-center justify-center">
                                     <div className="prose max-w-full p-4" ref={reportRef}>
-                                        <ReactMarkdown>{report}</ReactMarkdown>
+                                        <ReactMarkdown 
+                                            remarkPlugins={[remarkGfm]}
+                                            components={{
+                                                a(props) {
+                                                  return <a target="blank" {...props} />
+                                                }
+                                              }}>
+                                                {report}
+                                        </ReactMarkdown>
                                         {/* <div ref={endOfReportRef}></div> */}
                                     </div>
                                 </ScrollArea>
