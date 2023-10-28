@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Montserrat } from 'next/font/google'
-import { LayoutDashboard, PenSquare, Settings, FileText } from "lucide-react";
+import { LayoutDashboard, PenSquare, Settings, FileText, Library, MenuSquare } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
@@ -19,10 +19,22 @@ const routes = [
     color: "text-sky-500"
   },
   {
-    label: 'Research Assistant',
+    label: 'Research Report',
     icon: PenSquare,
     color: "text-pink-800",
-    href: '/mirrorscripts',
+    href: '/research',
+  },
+  {
+    label: 'Resources Report',
+    icon: Library,
+    color: "text-pink-800",
+    href: '/resources',
+  },
+  {
+    label: 'Outline Report',
+    icon: MenuSquare,
+    color: "text-pink-800",
+    href: '/outline',
   },
   {
     label: 'Your Reports',

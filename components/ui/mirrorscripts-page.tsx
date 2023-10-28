@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import * as z from "zod";
+import { ZodType } from "zod";
 import { v4 as uuidv4 } from 'uuid';
 import { Heading } from "@/components/heading";
 import { Empty } from "@/components/empty";
@@ -10,11 +11,7 @@ import { PenSquare, Upload } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LinkifyText } from "@/components/ui/linkify-text";
-import { 
-    reportTypeOptions,
-    formSchema 
-} from "./constants";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, FC } from "react";
 import { 
     Form, 
     FormControl, 
@@ -43,9 +40,17 @@ import remarkGfm from 'remark-gfm'
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePro } from "@/hooks/use-pro";
 import { getHostName }  from "@/lib/mirrorscripts";
+import { XIcon as Icon } from "lucide-react";
 
+interface MirrorScriptsPageProps {
+    title: string;
+    description: string;
+    formSchema: ZodType<any, any, any>;
+    defaultFormValues: Record<string, any>;
+    icons: typeof Icon;
+}
 
-const MirrorScriptsPage = () => {
+const MirrorScriptsPage: FC<MirrorScriptsPageProps> = ({ title, description, formSchema, defaultFormValues, icons }) => {
     const proModal = useProModal();
     const router = useRouter();
     const [report, setReport] = useState<string>('');
@@ -60,11 +65,7 @@ const MirrorScriptsPage = () => {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            task: "",
-            report_type : "research_report",
-            agent: "Auto Agent",
-        }
+        defaultValues: defaultFormValues,
     });
 
     const reportRef = useRef<HTMLDivElement | null>(null);
@@ -228,9 +229,9 @@ const MirrorScriptsPage = () => {
     return (
         <div>
             <Heading
-                title="MirrorScripts - Your AI Research Assistant"
-                description="Surpercharge your research writing."
-                icon={PenSquare}
+                title={title}
+                description={description}
+                icon={icons}
                 iconColor="text-pink-800"
                 bgColor="bg-pink-800/10"
             />
@@ -255,7 +256,7 @@ const MirrorScriptsPage = () => {
                             <FormField
                                 name="task"
                                 render={({ field }) => (
-                                    <FormItem className="col-span-12 lg:col-span-6">
+                                    <FormItem className="col-span-12 lg:col-span-7">
                                         <FormControl className="m-0 p-0">
                                             <Input
                                                 className="
@@ -273,42 +274,9 @@ const MirrorScriptsPage = () => {
                                 )}
                             />
                             <FormField
-                                control={form.control}
-                                name="report_type"
-                                render={({ field }) => (
-                                    <FormItem className="col-span-12 lg:col-span-2">
-                                        <Select
-                                            disabled={isLoading}
-                                            onValueChange={field.onChange}
-                                            value={field.value}
-                                            defaultValue={field.value}
-                                        >
-                                            <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue defaultValue={field.value} />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectLabel>Report Type</SelectLabel>
-                                                    {reportTypeOptions.map((option) => (
-                                                        <SelectItem
-                                                            key={option.value}
-                                                            value={option.value}
-                                                        >
-                                                            {option.label}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
                                 name=""
                                 render={({ field }) => (
-                                    <FormItem className="col-span-12 lg:col-span-2">
+                                    <FormItem className="col-span-12 lg:col-span-3">
                                         <FormControl className="m-0 p-0">
                                             <div>
                                                 <Input 
@@ -323,7 +291,7 @@ const MirrorScriptsPage = () => {
                                                 <Label htmlFor="fileUpload" > {/* Add a label that will trigger the file input when clicked */}
                                                     <div aria-disabled={isLoading} className="flex border rounded-md items-center justify-center bg-light hover:bg-secondary/90 h-10 px-4 py-2 aria-disabled:pointer-events-none aria-disabled:opacity-50" style={{ cursor: "pointer"}}>
                                                         <Upload className="justify-center"/>
-                                                        <span id="file-chosen" className="flex text-sm font-medium justify-center ml-3"> Upload Files</span>
+                                                        <span id="file-chosen" className="flex text-sm font-medium justify-center ml-2"> Upload Files</span>
                                                     </div>
                                                 </Label>
                                             </div>

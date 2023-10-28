@@ -5,17 +5,33 @@ import { cn } from "@/lib/utils";
 import { 
   ArrowRight, 
   PenSquare,
-  FileText
+  FileText,
+  Library,
+  MenuSquare
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const tools = [
   {
-    label: 'Research Assistant',
+    label: 'Research Report',
     icon: PenSquare,
     color: "text-pink-800",
     bgColor: "bg-pink-800/10",
-    href: '/mirrorscripts',
+    href: '/research',
+  },
+  {
+    label: 'Resources Report',
+    icon: Library,
+    color: "text-pink-800",
+    bgColor: "bg-pink-800/10",
+    href: '/resources',
+  },
+  {
+    label: 'Outline Report',
+    icon: MenuSquare,
+    color: "text-pink-800",
+    bgColor: "bg-pink-800/10",
+    href: '/outline',
   },
   {
     label: 'Your Reports',
