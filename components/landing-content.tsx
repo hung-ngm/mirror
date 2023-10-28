@@ -56,7 +56,7 @@ const features = [
 
 export const LandingContent = () => {
     return (
-        <div className="px-10 pb-20">
+        <div id="features" className="px-10 pb-20">
             <h2 className="text-center text-5xl text-white font-extrabold mb-10">
                 Features
             </h2>
