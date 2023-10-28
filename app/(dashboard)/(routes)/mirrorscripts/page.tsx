@@ -147,7 +147,7 @@ const MirrorScriptsPage = () => {
         try {
             setIsLoading(true);
             setReport('');
-
+            setLogs([]);
             // Check API limit
             const apiLimitResponse = await axios.get('/api/checkApiLimit');
             const freeTrial = apiLimitResponse.data.freeTrial;
@@ -357,13 +357,7 @@ const MirrorScriptsPage = () => {
                                     <LinkifyText>{log}</LinkifyText>
                                 </div>
                             ))}
-                            {/* <div ref={endOfLogsRef}></div> */}
                         </ScrollArea>
-                    )}
-                    {isLoading && (
-                        <div className="p-20">
-                            <Loader />
-                        </div>
                     )}
                     {!report && !isLoading && (
                         <Empty label="No report generated." />
@@ -386,7 +380,6 @@ const MirrorScriptsPage = () => {
                                               }}>
                                                 {report}
                                         </ReactMarkdown>
-                                        {/* <div ref={endOfReportRef}></div> */}
                                     </div>
                                 </ScrollArea>
                             </Card>
@@ -398,6 +391,11 @@ const MirrorScriptsPage = () => {
                                     </a>
                                 </div>
                             )}
+                        </div>
+                    )}
+                    {isLoading && (
+                        <div className="p-20">
+                            <Loader />
                         </div>
                     )}
                 </div>
