@@ -202,7 +202,7 @@ const MirrorScriptsPage: FC<MirrorScriptsPageProps> = ({ title, description, for
 
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const DELAY = 700 // ms
+    const DELAY = 0; // ms
     useEffect(() => {
         if (currentIndex >= reportChunks.length) {
             return;
