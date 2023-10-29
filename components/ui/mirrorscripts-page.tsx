@@ -131,14 +131,14 @@ const MirrorScriptsPage: FC<MirrorScriptsPageProps> = ({ title, description, for
             try {
                 const response = await axios.post(`${protocol}//${getHostName()}/upload/${file_uid}`, formData);
                 console.log(response);
-                const content = files.length + ' files upload'
+                const content = files.length === 1 ? '1 file uploaded' : files.length + ' files uploaded';
                 if (fileChosen) {
                     fileChosen.textContent = content
                 }
             } catch (error) {
                 console.log(error);
                 if (fileChosen) {
-                    fileChosen.textContent = "Upload Files"
+                    fileChosen.textContent = "Upload files"
                 } 
             }
         }
@@ -291,7 +291,7 @@ const MirrorScriptsPage: FC<MirrorScriptsPageProps> = ({ title, description, for
                                                 <Label htmlFor="fileUpload" > {/* Add a label that will trigger the file input when clicked */}
                                                     <div aria-disabled={isLoading} className="flex border rounded-md items-center justify-center bg-light hover:bg-secondary/90 h-10 px-4 py-2 aria-disabled:pointer-events-none aria-disabled:opacity-50" style={{ cursor: "pointer"}}>
                                                         <Upload className="justify-center"/>
-                                                        <span id="file-chosen" className="flex text-sm font-medium justify-center ml-2"> Upload Files</span>
+                                                        <span id="file-chosen" className="flex text-sm font-medium justify-center ml-2"> Upload files</span>
                                                     </div>
                                                 </Label>
                                             </div>
