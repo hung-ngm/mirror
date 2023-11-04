@@ -48,9 +48,10 @@ interface MirrorScriptsPageProps {
     formSchema: ZodType<any, any, any>;
     defaultFormValues: Record<string, any>;
     icons: typeof Icon;
+    pageDescription: string;
 }
 
-const MirrorScriptsPage: FC<MirrorScriptsPageProps> = ({ title, description, formSchema, defaultFormValues, icons }) => {
+const MirrorScriptsPage: FC<MirrorScriptsPageProps> = ({ title, description, formSchema, defaultFormValues, icons, pageDescription }) => {
     const proModal = useProModal();
     const router = useRouter();
     const [report, setReport] = useState<string>('');
@@ -131,14 +132,14 @@ const MirrorScriptsPage: FC<MirrorScriptsPageProps> = ({ title, description, for
             try {
                 const response = await axios.post(`${protocol}//${getHostName()}/upload/${file_uid}`, formData);
                 console.log(response);
-                const content = files.length + ' files upload'
+                const content = files.length === 1 ? '1 file uploaded' : files.length + ' files uploaded';
                 if (fileChosen) {
                     fileChosen.textContent = content
                 }
             } catch (error) {
                 console.log(error);
                 if (fileChosen) {
-                    fileChosen.textContent = "Upload Files"
+                    fileChosen.textContent = "Upload files"
                 } 
             }
         }
@@ -149,6 +150,11 @@ const MirrorScriptsPage: FC<MirrorScriptsPageProps> = ({ title, description, for
             setIsLoading(true);
             setReport('');
             setLogs([]);
+            const description = document.getElementById('pageDescription');
+            if (description) {
+                description.textContent = ""
+            }
+
             // Check API limit
             const apiLimitResponse = await axios.get('/api/checkApiLimit');
             const freeTrial = apiLimitResponse.data.freeTrial;
@@ -291,7 +297,7 @@ const MirrorScriptsPage: FC<MirrorScriptsPageProps> = ({ title, description, for
                                                 <Label htmlFor="fileUpload" > {/* Add a label that will trigger the file input when clicked */}
                                                     <div aria-disabled={isLoading} className="flex border rounded-md items-center justify-center bg-light hover:bg-secondary/90 h-10 px-4 py-2 aria-disabled:pointer-events-none aria-disabled:opacity-50" style={{ cursor: "pointer"}}>
                                                         <Upload className="justify-center"/>
-                                                        <span id="file-chosen" className="flex text-sm font-medium justify-center ml-2"> Upload Files</span>
+                                                        <span id="file-chosen" className="flex text-sm font-medium justify-center ml-2"> Upload files</span>
                                                     </div>
                                                 </Label>
                                             </div>
@@ -308,6 +314,7 @@ const MirrorScriptsPage: FC<MirrorScriptsPageProps> = ({ title, description, for
                         </form>
                     </Form>
                 </div>
+                <a id="pageDescription" className="p-4 space-y-4 text-sm"> {pageDescription} </a>
                 <div className="space-y-4 mt-4">
                     {logs.length > 0 && (
                         <ScrollArea className="overflow-y-scroll scroll-smooth h-[500px] text-lg text-gray-700 p-4 rounded flex items-center justify-center">

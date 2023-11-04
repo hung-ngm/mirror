@@ -7,7 +7,7 @@ import MirrorScriptsPage from '@/components/ui/mirrorscripts-page';
 const ResourceReportPage = () => {
     return (
         <MirrorScriptsPage
-            title="Research Report - Your AI Research Assistant"
+            title="Resource Report - Your AI Research Assistant"
             description="Supercharge your research writing."
             formSchema={researchReportFormSchema}
             defaultFormValues={{
@@ -16,6 +16,7 @@ const ResourceReportPage = () => {
                 agent: "Auto Agent",
             }}
             icons={Library}
+            pageDescription="This page generates a resource report"
         />
     )
 }
