@@ -16,6 +16,7 @@ const OutlineReportPage = () => {
                 agent: "Auto Agent",
             }}
             icons={MenuSquare}
+            pageDescription="This page generates an outline report"
         />
     )
 }

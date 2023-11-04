@@ -48,9 +48,10 @@ interface MirrorScriptsPageProps {
     formSchema: ZodType<any, any, any>;
     defaultFormValues: Record<string, any>;
     icons: typeof Icon;
+    pageDescription: string;
 }
 
-const MirrorScriptsPage: FC<MirrorScriptsPageProps> = ({ title, description, formSchema, defaultFormValues, icons }) => {
+const MirrorScriptsPage: FC<MirrorScriptsPageProps> = ({ title, description, formSchema, defaultFormValues, icons, pageDescription }) => {
     const proModal = useProModal();
     const router = useRouter();
     const [report, setReport] = useState<string>('');
@@ -149,6 +150,11 @@ const MirrorScriptsPage: FC<MirrorScriptsPageProps> = ({ title, description, for
             setIsLoading(true);
             setReport('');
             setLogs([]);
+            const description = document.getElementById('pageDescription');
+            if (description) {
+                description.textContent = ""
+            }
+
             // Check API limit
             const apiLimitResponse = await axios.get('/api/checkApiLimit');
             const freeTrial = apiLimitResponse.data.freeTrial;
@@ -308,6 +314,7 @@ const MirrorScriptsPage: FC<MirrorScriptsPageProps> = ({ title, description, for
                         </form>
                     </Form>
                 </div>
+                <a id="pageDescription" className="p-4 space-y-4 text-sm"> {pageDescription} </a>
                 <div className="space-y-4 mt-4">
                     {logs.length > 0 && (
                         <ScrollArea className="overflow-y-scroll scroll-smooth h-[500px] text-lg text-gray-700 p-4 rounded flex items-center justify-center">

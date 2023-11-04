@@ -16,6 +16,7 @@ const ResourceReportPage = () => {
                 agent: "Auto Agent",
             }}
             icons={Library}
+            pageDescription="This page generates a resource report"
         />
     )
 }

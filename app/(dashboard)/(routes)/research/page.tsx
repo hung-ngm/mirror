@@ -16,6 +16,7 @@ const ResearchReportPage = () => {
                 agent: "Auto Agent",
             }}
             icons={PenSquare}
+            pageDescription="This page generates a research report"
         />
     )
 }
